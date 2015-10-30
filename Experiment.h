@@ -27,8 +27,6 @@ class Experiment {
     vector<vector<double>> doubleTestingInput;
     vector<double> doubleTestingOutput;
 
-    vector<Algorithm::runResult> testResults;
-
 public:
     Experiment(vector<Updater*> _a, string _dataset, int _inputNodes, int _hiddenNodes, int _hiddenLayers, int _outputNodes, string actFunc,
                string _activateOutput);

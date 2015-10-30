@@ -15,17 +15,15 @@
 #include <string>
 
 MultilayerNN::MultilayerNN(int _inputNodes, int _hiddenNodes, int _hiddenLayers, int _outputNodes,
-                           string _activateHidden, string _activateOutput, double _momentum, double _learningRate) {
+                               string _activateHidden, string _activateOutput) {
     hiddenLayerCount = _hiddenLayers;
     hiddenNodesPerLayer = _hiddenNodes;
     outputNodesN = _outputNodes;
     inputNodesN = _inputNodes;
-    momentum = _momentum;
-    learningRate = _learningRate;
     if (_activateHidden.compare("sigmoid") == 0) hiddenSigmoid = true;
     if (_activateOutput.compare("sigmoid") == 0) outputSigmoid = true;
 
-    // Setup network structure
+    // Setup network structure and initialize random weights
     setTopology();
 }
 
@@ -37,7 +35,7 @@ MultilayerNN::~MultilayerNN() {
 
 void MultilayerNN::setTopology() {
     random_device rd;                                               // Initialize random device & distribution
-    uniform_real_distribution<double> dist(-0.3f, 0.3f);
+    normal_distribution<double> dist(0, 5);
     outputNodes.resize(outputNodesN);                               // We create N output node
     inputNodes.resize(inputNodesN);                            // One node per input
     hiddenNodes.resize(hiddenLayerCount);                           // Set hidden layers

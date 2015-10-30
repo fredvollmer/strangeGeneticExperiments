@@ -20,8 +20,20 @@ public:
     virtual MultilayerNN train(vector<vector<double>>* _dataset) = 0;
     virtual string nickname() = 0;
 
-private:
+protected:
     vector<vector<double>> dataset;
+    vector<MultilayerNN> networks;
+
+    // Neural network proerties
+    int inputNodesN;
+    int outputNodesN;
+    int hiddenLayerCount;
+    int hiddenNodesPerLayer;
+    double targetMSE;
+    string outputActivation;
+    string hiddenActivation;
+
+    void initPopulation();
 };
 
 

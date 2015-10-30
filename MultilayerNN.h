@@ -73,8 +73,8 @@ private:
     double runOne(vector<double> tuple);     // Tests a single tuple
 
 public:
-    MultilayerNN(int _inputNodes, int _hiddenNodes, int _hiddenLayers, int _outputNodes, string actFunc,
-                                   string _activateOutput, double momentum, double learningRate);
+    MultilayerNN(int _inputNodes, int _hiddenNodes, int _hiddenLayers, int _outputNodes,
+                               string _activateHidden, string _activateOutput);
     MultilayerNN(const MultilayerNN& orig);
      void reset();
      ~MultilayerNN();
