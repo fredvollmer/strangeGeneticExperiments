@@ -53,7 +53,6 @@ private:
     bool outputSigmoid = false;
     int noDecreaseCount = 0;
     double lastError;
-    vector<vector<double>> weights;          // Weight between layer i and j
     vector<vector<double>> tempWeights;
     vector<vector<double>> previousWeights;  // Stores weights from last pattern
     vector<double> inputNodes;               // Value of node in input layer
@@ -81,6 +80,8 @@ public:
      vector<double> train(vector<vector<double>> tset);
      double run(vector<vector<double>> data);
      string const className()  { return "MLP"; }
+     double lastMSE;
+     vector<vector<double>> weights;          // Weight between layer i and j
 
 };
 

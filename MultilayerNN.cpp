@@ -35,7 +35,7 @@ MultilayerNN::~MultilayerNN() {
 
 void MultilayerNN::setTopology() {
     random_device rd;                                               // Initialize random device & distribution
-    normal_distribution<double> dist(0, 5);
+    uniform_real_distribution<double> dist(-0.5, 0.5);
     outputNodes.resize(outputNodesN);                               // We create N output node
     inputNodes.resize(inputNodesN);                            // One node per input
     hiddenNodes.resize(hiddenLayerCount);                           // Set hidden layers
@@ -191,6 +191,8 @@ double MultilayerNN::run(vector<vector<double>> data) {
     }
 
     mse /= data.size();
+
+    lastMSE = mse;
 
     return mse;
 }
