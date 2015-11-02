@@ -71,8 +71,9 @@ void Experiment::getData(string dataPath) {
 
         // Loop through each input, plus output
         for (int n = 0; n < inputs + 1; n = n + 1) {
-            getline(dataStream, cell, ',');      // Read next "block" from data file
-            dataset.at(t).push_back(stof(cell));       // Add this cell to dataset
+            getline(dataStream, cell, ',');     // Read next "block" from data file
+            double num = stringToNumber(cell);  // Convert cell string to double
+            dataset.at(t).push_back(num);       // Add this cell to dataset
         }
     }
 

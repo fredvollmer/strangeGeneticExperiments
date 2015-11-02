@@ -8,6 +8,7 @@
 #include <vector>
 #include "Updater.h"
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -38,6 +39,14 @@ private:
     void nextFold();                            // For re-folding
     void nextIteration();                       // For next iteration of CV
     void printMatrix(vector<vector<double>> v);  // Helper method for outputting dataset
+
+    // Helper function for converting string to double
+    double stringToNumber ( const string &Text )
+    {
+        istringstream ss(Text);
+        double result;
+        return ss >> result ? result : 0;
+    }
 
 };
 
