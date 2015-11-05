@@ -27,9 +27,6 @@ MultilayerNN::MultilayerNN(int _inputNodes, int _hiddenNodes, int _hiddenLayers,
     setTopology();
 }
 
-MultilayerNN::MultilayerNN(const MultilayerNN &orig) {
-}
-
 MultilayerNN::~MultilayerNN() {
 }
 
@@ -162,7 +159,7 @@ double MultilayerNN::calculateOutputError(double target) {
         // Set all targets to -1
         fill(nodeTargets.begin(), nodeTargets.end(), -1);
         // Set target node to 1
-        nodeTargets.at(target) = 1;
+        nodeTargets.at(target  - 1) = 1;
     }
 
     // Calculate error for output nodes

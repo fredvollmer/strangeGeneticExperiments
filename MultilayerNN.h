@@ -74,7 +74,6 @@ private:
 public:
     MultilayerNN(int _inputNodes, int _hiddenNodes, int _hiddenLayers, int _outputNodes,
                                string _activateHidden, string _activateOutput);
-    MultilayerNN(const MultilayerNN& orig);
     MultilayerNN() {}
      void reset();
      ~MultilayerNN();

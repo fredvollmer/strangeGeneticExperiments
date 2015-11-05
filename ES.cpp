@@ -22,6 +22,10 @@ ES::ES(int _children_parent_ratio, int _maxGenerations, double _targetError, int
     hiddenActivation = _activateHidden;
     outputActivation = _activateOutput;
 
+    // Assign learning rates heuristically
+    overallLearningRate = 1 / pow(2*50, 0.5);
+    cwLearningRate = 1 / pow(2 * pow(50, 0.5), 0.5);
+
     // init networks
     initPopulation();
 
@@ -37,7 +41,7 @@ ES::ES(int _children_parent_ratio, int _maxGenerations, double _targetError, int
 MultilayerNN ES::train(vector<vector<double>>* _dataset) {
     random_device rd;                                               // Initialize random device & distribution
     uniform_int_distribution<u_long> dist(0, networks.size() - 1);
-    normal_distribution<double> norm(1, 0 );
+    normal_distribution<double> norm(0, 1 );
     double currentMinimumError = DBL_MAX;
     vector<double> offspringErrors(50 * children_parent_ratio);
     vector<Chromosome> selectionChroms(50 * children_parent_ratio + 50);
@@ -71,7 +75,7 @@ MultilayerNN ES::train(vector<vector<double>>* _dataset) {
 
         // Mutate offspring
         for (auto &c : offspring) {
-            mutate(&c, globalTerm);
+            mutate(c, globalTerm);
         }
 
         // Run offspring networks
@@ -88,6 +92,8 @@ MultilayerNN ES::train(vector<vector<double>>* _dataset) {
         // Clear population
         population.clear();
 
+        cout << "SELECTED FOR GEN " << generation << endl;
+
         // Pull out the first 50 to replace population
         for (int i= 0 ; i < 50; i++) {
             // Iterator pointing to next min
@@ -102,6 +108,9 @@ MultilayerNN ES::train(vector<vector<double>>* _dataset) {
 
             // Push this element to popualtion
             population.push_back(currentMin);
+
+            //print
+            cout << currentMin.nn.lastMSE << endl;
         }
 
         cout << "Generation " << generation << ": " << currentMinimumError << endl;
@@ -136,16 +145,17 @@ ES::Chromosome ES::recombination(Chromosome p1, Chromosome p2) {
     return child;
 }
 
-void ES::mutate(Chromosome *c, double globalTerm) {
+void ES::mutate(Chromosome &c, double globalTerm) {
     normal_distribution<double> norm(0, 1);
     random_device rd;
     // Mutate step size
-    c->stepSize = c->stepSize * exp((overallLearningRate * globalTerm) + (cwLearningRate * norm(rd)));
+    double delta = exp((overallLearningRate * globalTerm) + (cwLearningRate * norm(rd)));
+    c.stepSize = c.stepSize * delta;
 
     // Mutate object function: mutate each weight
-    for (int i = 0; i < c->nn.weights.size(); i++) {
-        for (int j = 0; j < c->nn.weights[i].size(); j++) {
-            c->nn.weights[i][j] += c->stepSize * norm(rd);
+    for (int i = 0; i < c.nn.weights.size(); i++) {
+        for (int j = 0; j < c.nn.weights[i].size(); j++) {
+            c.nn.weights[i][j] += c.stepSize * norm(rd);
         }
     }
 

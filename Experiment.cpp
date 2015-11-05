@@ -81,7 +81,7 @@ void Experiment::getData(string dataPath) {
         }
     }
 
-    printMatrix(dataset);
+    //printMatrix(dataset);
 
     dataStream.close();
 

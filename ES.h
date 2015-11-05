@@ -43,8 +43,7 @@ private:
     vector<double> populationErrors;
     void runNetworks();
     Chromosome recombination(Chromosome p1, Chromosome p2);
-    void mutate(Chromosome *c, double globalTerm);
+    void mutate(Chromosome &c, double globalTerm);
 };
-
 
 #endif //ASSIGNMENT3_ES_H
