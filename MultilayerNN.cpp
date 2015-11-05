@@ -159,8 +159,8 @@ double MultilayerNN::calculateOutputError(double target) {
 
         // Otherwise we're classifying, so assign proper 0/1s
     } else {
-        // Set all targets to 0
-        fill(nodeTargets.begin(), nodeTargets.end(), 0);
+        // Set all targets to -1
+        fill(nodeTargets.begin(), nodeTargets.end(), -1);
         // Set target node to 1
         nodeTargets.at(target) = 1;
     }

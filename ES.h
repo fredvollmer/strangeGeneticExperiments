@@ -24,9 +24,9 @@ private:
 
     // Population chromosome struct
     struct Chromosome {
-        MultilayerNN nn;
-        double stepSize;
-
+        MultilayerNN nn = MultilayerNN();
+        double stepSize = 0;
+        Chromosome() {};
         // Lamda func for sorting by network error
         bool operator< (const Chromosome &other) const {
             return nn.lastMSE < other.nn.lastMSE;

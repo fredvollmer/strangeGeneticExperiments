@@ -27,20 +27,21 @@ ES::ES(int _children_parent_ratio, int _maxGenerations, double _targetError, int
 
     // Init population, initial step size is 1
     for (auto &nn : networks) {
-        Chromosome p;
-        p.nn = nn;
-        p.stepSize = 1;
-        population.push_back(p);
+        Chromosome *p = new Chromosome();
+        p->nn = nn;
+        p->stepSize = 1;
+        population.push_back(*p);
     }
 }
 
 MultilayerNN ES::train(vector<vector<double>>* _dataset) {
     random_device rd;                                               // Initialize random device & distribution
-    uniform_int_distribution<u_long> dist(0, networks.size());
+    uniform_int_distribution<u_long> dist(0, networks.size() - 1);
     normal_distribution<double> norm(1, 0 );
     double currentMinimumError = DBL_MAX;
     vector<double> offspringErrors(50 * children_parent_ratio);
-    vector<double> selectionChroms(50 * children_parent_ratio + 50);
+    vector<Chromosome> selectionChroms(50 * children_parent_ratio + 50);
+    Chromosome currentMin;
 
     // Save dataset
     dataset = *_dataset;
@@ -88,14 +89,12 @@ MultilayerNN ES::train(vector<vector<double>>* _dataset) {
         population.clear();
 
         // Pull out the first 50 to replace population
-        Chromosome currentMin;
-        vector<Chromosome>::iterator it;
         for (int i= 0 ; i < 50; i++) {
             // Iterator pointing to next min
-            it = min_element(selectionChroms.begin(), selectionChroms.end());
+            auto it = min_element(selectionChroms.begin(), selectionChroms.end());
 
             // Save this element, then erase it from vector
-            currentMin = selectionChroms.at(it);
+            currentMin = *it;
             selectionChroms.erase(it);
 
             // If this is absolute minimum, save it as current best
@@ -110,6 +109,7 @@ MultilayerNN ES::train(vector<vector<double>>* _dataset) {
         // Next generation
         generation++;
     }
+    return currentMin.nn;
 }
 
 void ES::runNetworks() {
@@ -118,7 +118,7 @@ void ES::runNetworks() {
     }
 }
 
-Chromosome ES::recombination(Chromosome p1, Chromosome p2) {
+ES::Chromosome ES::recombination(Chromosome p1, Chromosome p2) {
     // Intermediate recombination with r = 2
     // Copy p1 to be child...we'll replace its weights next
     Chromosome child = p1;
@@ -137,15 +137,15 @@ Chromosome ES::recombination(Chromosome p1, Chromosome p2) {
 }
 
 void ES::mutate(Chromosome *c, double globalTerm) {
-    normal_distribution norm(0, 1);
+    normal_distribution<double> norm(0, 1);
     random_device rd;
     // Mutate step size
     c->stepSize = c->stepSize * exp((overallLearningRate * globalTerm) + (cwLearningRate * norm(rd)));
 
     // Mutate object function: mutate each weight
-    for (int i = 0; i < c->.nn.weights.size(); i++) {
-        for (int j = 0; j < c->.nn.weights[i].size(); j++) {
-            c->.nn.weights[i][j] += c->stepSize * norm(rd);
+    for (int i = 0; i < c->nn.weights.size(); i++) {
+        for (int j = 0; j < c->nn.weights[i].size(); j++) {
+            c->nn.weights[i][j] += c->stepSize * norm(rd);
         }
     }
 

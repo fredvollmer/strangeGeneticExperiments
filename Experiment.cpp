@@ -12,12 +12,11 @@
 #include <vector>
 #include <random>
 
-Experiment::Experiment(vector<Updater *> _a, string _dataset, int _inputNodes, int _hiddenNodes, int _hiddenLayers,
-                       int _outputNodes, string actFunc,
-                       string _activateOutput) {
+Experiment::Experiment(vector<Updater *> _a, string _dataset, int _rows, int _columns) {
     // Set parameters
     updaters = _a;
-    inputs = _inputNodes;
+    columns = _columns;
+    rows = _rows;
 
     // Load dataset
     getData(_dataset);
@@ -57,7 +56,8 @@ void Experiment::nextFold() {
 
 void Experiment::getData(string dataPath) {
     ifstream dataStream;
-    string cell;
+    string s_cell;
+    char * cell;
 
     // Open data file for reading
     dataStream.open(dataPath);
@@ -65,19 +65,23 @@ void Experiment::getData(string dataPath) {
         cerr << "Read stream failure: " << strerror(errno) << '\n';
     }
     // Loop through each tuple
-    for (int t = 0; t < n; t = t + 1) {
-        vector<double> newTuple;                 // Create empty vector
+    for (int t = 0; t < rows; t = t + 1) {
+        vector<double> newTuple;                // Create empty vector
         dataset.push_back(newTuple);            // Add new tuple to dataset
+        getline(dataStream, s_cell);              // Read next "block" from data file
+        cell = &s_cell[0u];
+
+        cell = strtok(cell, ",");               // Tokenize cell by ','
 
         // Loop through each input, plus output
-        for (int n = 0; n < inputs + 1; n = n + 1) {
-            getline(dataStream, cell, ',');     // Read next "block" from data file
+        for (int n = 0; n < columns; n = n + 1) {
             double num = stringToNumber(cell);  // Convert cell string to double
             dataset.at(t).push_back(num);       // Add this cell to dataset
+            cell  = strtok(NULL, ",");          // Next token
         }
     }
 
-    //printMatrix(dataset);
+    printMatrix(dataset);
 
     dataStream.close();
 
@@ -124,4 +128,6 @@ bool Experiment::runExperiment() {
 
     // Close writers
     resultStream.close();
+
+    return true;
 }
