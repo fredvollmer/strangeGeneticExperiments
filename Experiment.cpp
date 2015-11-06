@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <string.h>
 
 Experiment::Experiment(vector<Updater *> _a, string _dataset, int _inputNodes, int _hiddenNodes, int _hiddenLayers,
                        int _outputNodes, string actFunc,

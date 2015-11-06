@@ -92,11 +92,11 @@ MultilayerNN ES::train(vector<vector<double>>* _dataset) {
         vector<Chromosome>::iterator it;
         for (int i= 0 ; i < 50; i++) {
             // Iterator pointing to next min
-            it = min_element(selectionChroms.begin(), selectionChroms.end());
+            //it = min_element(selectionChroms.begin(), selectionChroms.end());
 
             // Save this element, then erase it from vector
             currentMin = selectionChroms.at(it);
-            selectionChroms.erase(it);
+            //selectionChroms.erase(it);
 
             // If this is absolute minimum, save it as current best
             if (i == 0) currentMinimumError = currentMin.nn.lastMSE;
