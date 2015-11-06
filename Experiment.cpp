@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <string.h>
 
 Experiment::Experiment(vector<Updater *> _a, string _dataset, int _rows, int _columns) {
     // Set parameters

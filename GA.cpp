@@ -2,7 +2,7 @@
 // Created by Fred Vollmer on 11/1/15.
 //
 
-#include "ES.h"
+#include "GA.h"
 #include "float.h"
 #include <random>
 #include <iostream>
@@ -10,7 +10,7 @@
 #include <string.h>
 #include <algorithm>
 
-ES::ES(int _children_parent_ratio, int _maxGenerations, double _targetError, int _inputNodes, int _hiddenNodes,
+GA::GA(int _children_parent_ratio, int _maxGenerations, double _targetError, int _inputNodes, int _hiddenNodes,
        int _hiddenLayers, int _outputNodes,
        string _activateHidden, string _activateOutput) {
 
@@ -31,7 +31,7 @@ ES::ES(int _children_parent_ratio, int _maxGenerations, double _targetError, int
 
 }
 
-MultilayerNN ES::train(vector<vector<double>> *_dataset) {
+MultilayerNN GA::train(vector<vector<double>> *_dataset) {
     int lowDeltaCounter = 0;
     random_device rd;                                               // Initialize random device & distribution
     uniform_int_distribution<u_long> dist(0, 50 - 1);
@@ -41,7 +41,7 @@ MultilayerNN ES::train(vector<vector<double>> *_dataset) {
     Chromosome currentMin;
 
     fstream resultStream;
-    resultStream.open("run_ES.csv", ofstream::out | ofstream::trunc);
+    resultStream.open("run_GA.csv", ofstream::out | ofstream::trunc);
     // Check for stream error
     if (resultStream.fail()) {
         cerr << "open stream failure at rs: " << strerror(errno) << '\n';
@@ -135,13 +135,13 @@ MultilayerNN ES::train(vector<vector<double>> *_dataset) {
     return currentMin.nn;
 }
 
-void ES::runNetworks() {
+void GA::runNetworks() {
     for (int i = 0; i < population.size(); i++) {
         population[i].nn.run(dataset);
     }
 }
 
-ES::Chromosome ES::recombination(Chromosome p1, Chromosome p2) {
+GA::Chromosome GA::recombination(Chromosome p1, Chromosome p2) {
     // Intermediate recombination with r = 2
     // Copy p1 to be child...we'll replace its weights next
     Chromosome child = p1;
@@ -159,7 +159,7 @@ ES::Chromosome ES::recombination(Chromosome p1, Chromosome p2) {
     return child;
 }
 
-void ES::mutate(Chromosome &c, double globalTerm) {
+void GA::mutate(Chromosome &c, double globalTerm) {
     normal_distribution<double> norm(0, 1);
     random_device rd;
     // Mutate step size
@@ -174,7 +174,7 @@ void ES::mutate(Chromosome &c, double globalTerm) {
     }
 }
 
-void ES::populationSetup() {
+void GA::populationSetup() {
 
     generation = 0;
     population.clear();
