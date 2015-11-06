@@ -24,9 +24,9 @@ private:
 
     // Population chromosome struct
     struct Chromosome {
-        MultilayerNN nn;
-        double stepSize;
-
+        MultilayerNN nn = MultilayerNN();
+        double stepSize = 0;
+        Chromosome() {};
         // Lamda func for sorting by network error
         bool operator< (const Chromosome &other) const {
             return nn.lastMSE < other.nn.lastMSE;
@@ -43,8 +43,8 @@ private:
     vector<double> populationErrors;
     void runNetworks();
     Chromosome recombination(Chromosome p1, Chromosome p2);
-    void mutate(Chromosome *c, double globalTerm);
+    void mutate(Chromosome &c, double globalTerm);
+    void populationSetup();
 };
-
 
 #endif //ASSIGNMENT3_ES_H

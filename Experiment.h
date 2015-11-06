@@ -15,8 +15,8 @@ using namespace std;
 class Experiment {
 
     vector<Updater*> updaters;    // The algorithm object to run excperiemnt on
-    int inputs;     // Number of x for Rosenbrock function
-    int n;          // Sample size
+    int columns;     // Number of x for Rosenbrock function
+    int rows;          // Sample size
 
     vector<vector<double>> dataset;
     vector<vector<double>> trainingData;
@@ -29,8 +29,7 @@ class Experiment {
     vector<double> doubleTestingOutput;
 
 public:
-    Experiment(vector<Updater*> _a, string _dataset, int _inputNodes, int _hiddenNodes, int _hiddenLayers, int _outputNodes, string actFunc,
-               string _activateOutput);
+    Experiment(vector<Updater *> _a, string _dataset, int rows, int columns);
     bool runExperiment();
     void getDoubleData();
 private:
