@@ -44,6 +44,7 @@ private:
     void runNetworks();
     Chromosome recombination(Chromosome p1, Chromosome p2);
     void mutate(Chromosome &c, double globalTerm);
+    void populationSetup();
 };
 
 #endif //ASSIGNMENT3_ES_H
