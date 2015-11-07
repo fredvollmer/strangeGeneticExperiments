@@ -11,7 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include <string>
+#include <string.h>
 
 Experiment::Experiment(vector<Updater *> _a, vector<string> _datasets, int _rows, int _columns) {
     // Set parameters
@@ -113,10 +113,10 @@ bool Experiment::runExperiment() {
 
     // Ruin 5x2CV on each dataset
 
-    for (auto it = begin(datasets); it < end(datasets); it++) {
+    for (auto &ds : datasets) {
 
         // Load dataset
-        getData(*it);
+        getData(ds);
 
         //nextIteration();
         //a.front() -> train(trainingData);
