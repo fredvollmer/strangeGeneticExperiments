@@ -13,7 +13,7 @@ int main() {
 
     u.push_back(&es);
 
-    Experiment e(u, "bupa.data", 200, 7);
+    Experiment e(u, {"bupa_n.csv", "ecoli_n.csv"}, 200, 7);
 
     e.runExperiment();
 }
