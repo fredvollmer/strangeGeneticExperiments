@@ -42,7 +42,7 @@ private:
     vector<Chromosome> offspring;
     vector<double> populationErrors;
     void runNetworks();
-    Chromosome* selection();
+    void selection(Chromosome parents[2]);
     Chromosome* crossover(Chromosome* p);
     void mutate(Chromosome &c);
     void populationSetup();

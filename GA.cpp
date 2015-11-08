@@ -64,12 +64,26 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
         selectionChroms.clear();
 
         // Generate offspring, add into temporary offspring pool
-        for (int i = 0; i < population.size()/2; i++) { //TODO what if the population has an odd number
+        for (int i = 0; i < population.size()/2; i++) {
             // select the best two parents out of ten random chromosomes
-            random_shuffle(population[0], population[population.size()]);
-            Chromosome* parents = selection();
+            random_shuffle(population.begin(), population.end());
+            Chromosome parents[2];
+            selection(parents);
             // Create child via recombination
-            offspring.push_back(crossover(parents)); //TODO make sure this part works when returning a pointer
+            Chromosome *children;
+            children = crossover(parents);
+            offspring.push_back(children[0]);
+            offspring.push_back(children[1]);
+        }
+        if (population.size()%2==1){
+            // select the best two parents out of ten random chromosomes
+            random_shuffle(population.begin(), population.end());
+            Chromosome parents[2];
+            selection(parents);
+            // Create child via recombination
+            Chromosome *children;
+            children = crossover(parents);
+            offspring.push_back(children[0]);
         }
 
         // Overall random number from N(0,1) for this generation
@@ -85,38 +99,16 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
             offspring[i].nn.run(dataset);
         }
 
-        // Select survivors
-        // Create combined parent/offspring set
-        //TODO change this stuff
-        selectionChroms.reserve(population.size() + offspring.size()); // preallocate memory
-        selectionChroms.insert(selectionChroms.end(), population.begin(), population.end());
-        selectionChroms.insert(selectionChroms.end(), offspring.begin(), offspring.end());
-
         // Clear population
         population.clear();
 
-        // Pull out the first 50 to replace population
-        for (int i = 0; i < 50; i++) {
-            // Iterator pointing to next min
-            auto it = min_element(selectionChroms.begin(), selectionChroms.end());
+        population=offspring;
 
-            // Save this element, then erase it from vector
-            currentMin = *it;
-            selectionChroms.erase(it);
-
-            //TODO this is the stopping step
-            // If this is absolute minimum, save it as current best
-            if (i == 0) {
-                if (currentMinimumError - currentMin.nn.lastMSE < 0.001) lowDeltaCounter++;
-                else lowDeltaCounter = 0;
-                currentMinimumError = currentMin.nn.lastMSE;
-            }
-
-            // Push this element to popualtion
-            population.push_back(currentMin);
-
-            //print
-            //cout << currentMin.nn.lastMSE << endl;
+        //find minimum error
+        for (int i = 0; i < population.size(); i++) {
+                if(population[i].nn.lastMSE<currentMinimumError) {
+                    currentMinimumError=population[i].nn.lastMSE;
+                }
         }
 
         // Output result every 50 gens
@@ -142,9 +134,10 @@ void GA::runNetworks() {
     }
 }
 
-GA::Chromosome* GA::selection() {
+void GA::selection(Chromosome parents[2]) {
     //get the first 10 chromosomes and use select the best
-    Chromosome parents[2] = {population[0],population[1]};
+    parents[0]=population[0];
+    parents[1]=population[1];
 
     // Create child network by taking average of each weight from parents 7t80
     for (int i = 1; i < 10; i++) {
@@ -153,11 +146,6 @@ GA::Chromosome* GA::selection() {
             parents[0]=population[i];
         }
     }
-
-    // Child step size is average of parents'
-    /*child.stepSize = (p1.stepSize + p2.stepSize) / 2;*/
-
-    return &parents[0];
 }
 
 GA::Chromosome* GA::crossover(Chromosome* p) {
