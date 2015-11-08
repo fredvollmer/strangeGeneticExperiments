@@ -64,13 +64,12 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
         selectionChroms.clear();
 
         // Generate offspring, add into temporary offspring pool
-        for (int i = 1; i <= children_parent_ratio * 50; i++) {
-            // Randomly select two parents with uniform probability
-            //TODO change these two lines
-            Chromosome p1 = population.at(dist(rd));
-            Chromosome p2 = population.at(dist(rd));
+        for (int i = 0; i < population.size()/2; i++) { //TODO what if the population has an odd number
+            // select the best two parents out of ten random chromosomes
+            random_shuffle(population[0], population[population.size()]);
+            Chromosome* parents = selection();
             // Create child via recombination
-            offspring.push_back(crossover(p1, p2)); //TODO make sure this part works when returning a pointer
+            offspring.push_back(crossover(parents)); //TODO make sure this part works when returning a pointer
         }
 
         // Overall random number from N(0,1) for this generation
@@ -143,8 +142,26 @@ void GA::runNetworks() {
     }
 }
 
-GA::Chromosome* GA::crossover(Chromosome p1, Chromosome p2) {
-    Chromosome two_children[2] = {p1,p2};
+GA::Chromosome* GA::selection() {
+    //get the first 10 chromosomes and use select the best
+    Chromosome parents[2] = {population[0],population[1]};
+
+    // Create child network by taking average of each weight from parents 7t80
+    for (int i = 1; i < 10; i++) {
+        if(parents[0].nn.lastMSE>population[i].nn.lastMSE){
+            parents[1]=parents[0];
+            parents[0]=population[i];
+        }
+    }
+
+    // Child step size is average of parents'
+    /*child.stepSize = (p1.stepSize + p2.stepSize) / 2;*/
+
+    return &parents[0];
+}
+
+GA::Chromosome* GA::crossover(Chromosome* p) {
+    Chromosome two_children[2] = {p[0],p[1]};
     double temp;
 
     // Create child network by taking average of each weight from parents 7t80
