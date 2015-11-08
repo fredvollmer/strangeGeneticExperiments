@@ -19,9 +19,19 @@ private:
     double crossover_prob;
     int pop_size;
     int generation;
+    int dimensions;
+    int max_generations;
+    int cur_generation;
+    vector<vector<double>> dataset;
+
+    void crossover();
+    vector<double> createTrainingVector();
+    double fitnessFunction();
+    void initPopulation(int population_size);
 
 public:
-    DE(double _beta, double _crossover_prob, int _pop_size);
+    DE(double _beta, double _crossover_prob, int _pop_size,int _max_generations, double _targetError, int _inputNodes,
+       int _hiddenNodes, int _hiddenLayers, int _outputNodes, string _activateHidden, string _activateOutput);
     MultilayerNN train(vector<vector<double>>* _dataset) override;
     string nickname() override { return "Differential Evolution"; }
 };
