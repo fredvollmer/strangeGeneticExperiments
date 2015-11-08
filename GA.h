@@ -13,7 +13,7 @@ class GA : public Updater {
 
 public:
     // Constructor
-    GA(int _children_parent_ratio, int _maxGenerations, double _targetError, int _inputNodes, int _hiddenNodes,
+    GA(int _maxGenerations, double _targetError, int _inputNodes, int _hiddenNodes,
        int _hiddenLayers, int _outputNodes,
        string _activateHidden, string _activateOutput);
     // Extending virtual functions
@@ -42,8 +42,8 @@ private:
     vector<Chromosome> offspring;
     vector<double> populationErrors;
     void runNetworks();
-    Chromosome recombination(Chromosome p1, Chromosome p2);
-    void mutate(Chromosome &c, double globalTerm);
+    Chromosome* crossover(Chromosome p1, Chromosome p2);
+    void mutate(Chromosome &c);
     void populationSetup();
 };
 
