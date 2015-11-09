@@ -9,6 +9,8 @@
 #include <string.h>
 #include <float.h>
 
+// Constructor
+
 DE::DE(double _beta, double _crossover_prob, int _pop_size,int _max_generations, double _targetError, int _inputNodes,
        int _hiddenNodes, int _hiddenLayers, int _outputNodes, string _activateHidden, string _activateOutput){
     beta = _beta;
@@ -64,6 +66,7 @@ MultilayerNN DE::train(vector<vector<double>>* _dataset){
                 networks[i].weights = oldWeights;
             }
 
+            //check if the new network is the best
             if(new_fit < min_err ){
                 min_err = new_fit;
                 bestNetwork = networks[i];
@@ -74,6 +77,7 @@ MultilayerNN DE::train(vector<vector<double>>* _dataset){
             resultStream << generation << "," << min_err << endl;
         }
 
+        //increment the generation
         cur_generation++;
     }
 }
@@ -84,12 +88,14 @@ void DE::crossover(int cur_index, vector<vector<double>> trial) {
     vector<vector<double>> aWeights = networks[cur_index].weights;
     MultilayerNN vecX = networks[cur_index];
 
+    //iterate over every weight
     for(int i = 0; i < aWeights.size(); i++){
         for (int j = 0; j < aWeights[i].size(); j++){
+            //roll the dice uniformly, creates a double between (0, 1)
             double cr = crossover_chance(generator);
 
-            //binomial crossover
-            if (cr < crossover_prob){
+            // binomial crossover
+            if (cr > crossover_prob){
                 //grab the weight back from the x vector
                 trial[i][j] = vecX.weights[i][j];
             }
@@ -105,8 +111,11 @@ vector<vector<double>> DE::createTrialVector(int cur_index) {
     bool bFlag = true;
     bool cFlag = true;
 
+    //create a random scaling value between (-beta, beta) uniformly
     double cur_beta = beta_size(generator);
 
+    // pick 2 data points at random that are different from each other
+    // and the current data point
     while(bFlag){
         rand_indexB = rd()% pop_size;
         if (cur_index != rand_indexB){
@@ -120,10 +129,13 @@ vector<vector<double>> DE::createTrialVector(int cur_index) {
         }
     }
 
+    // retrieve the weights
     vector<vector<double>> trialWeights;
     vector<vector<double>> aWeights = networks[cur_index].weights;
     vector<vector<double>> bWeights = networks[rand_indexB].weights;
     vector<vector<double>> cWeights = networks[rand_indexC].weights;
+
+    // loop over the weights and update them
     for(int i = 0; i < aWeights.size(); i++){
         for (int j = 0; j < aWeights[i].size(); j++){
             double new_weight = aWeights[i][j] + cur_beta * (bWeights[i][j] - cWeights[i][j]);
@@ -131,15 +143,19 @@ vector<vector<double>> DE::createTrialVector(int cur_index) {
         }
     }
 
+    // return the weights after crossover
     return trialWeights;
 }
 
 double DE::fitnessFunction(MultilayerNN net) {
+    // run the network with the current weights to
+    // obtain the mean squared error
     net.run(dataset);
     return net.lastMSE;
 }
 
 void DE::initPopulation(int population_size) {
+    // create the networks for the population
     for (int i = 0; i < population_size; i++) {
         MultilayerNN nn(inputNodesN, hiddenNodesPerLayer,
                         hiddenLayerCount, outputNodesN, hiddenActivation, outputActivation);
