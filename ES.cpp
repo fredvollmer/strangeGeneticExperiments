@@ -8,7 +8,11 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+
 #include <bits/stl_algo.h>
+
+#include <algorithm>
+
 
 ES::ES(int _children_parent_ratio, int _maxGenerations, double _targetError, int _inputNodes, int _hiddenNodes,
        int _hiddenLayers, int _outputNodes,
@@ -37,6 +41,7 @@ MultilayerNN ES::train(vector<vector<double>> *_dataset) {
     uniform_int_distribution<u_long> dist(0, 50 - 1);
     normal_distribution<double> norm(0, 1);
     double currentMinimumError = DBL_MAX;
+    MultilayerNN currentMinimumNetwork;
     vector<Chromosome> selectionChroms(50 * children_parent_ratio + 50);
     Chromosome currentMin;
 
@@ -117,6 +122,7 @@ MultilayerNN ES::train(vector<vector<double>> *_dataset) {
                 if (currentMinimumError - currentMin.nn.lastMSE < 0.001) lowDeltaCounter++;
                 else lowDeltaCounter = 0;
                 currentMinimumError = currentMin.nn.lastMSE;
+                currentMinimumNetwork = currentMin.nn;
             }
 
             // Push this element to popualtion
@@ -140,7 +146,7 @@ MultilayerNN ES::train(vector<vector<double>> *_dataset) {
 
     resultStream.close();
 
-    return currentMin.nn;
+    return currentMinimumNetwork;
 }
 
 void ES::runNetworks() {

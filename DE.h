@@ -5,6 +5,7 @@
 #include "Updater.h"
 #include <vector>
 #include <math.h>
+#include "MultilayerNN.h"
 
 using namespace std;
 
@@ -24,9 +25,9 @@ private:
     int cur_generation;
     vector<vector<double>> dataset;
 
-    void crossover();
-    vector<double> createTrainingVector();
-    double fitnessFunction();
+    void crossover(int cur_index, vector<vector<double>> trial);
+    vector<vector<double>> createTrialVector(int cur_index);
+    double fitnessFunction(MultilayerNN net);
     void initPopulation(int population_size);
 
 public:

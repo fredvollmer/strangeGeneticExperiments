@@ -9,6 +9,7 @@
 #include "Updater.h"
 #include <string>
 #include <sstream>
+#include <queue>
 
 using namespace std;
 
@@ -27,9 +28,11 @@ class Experiment {
     vector<double> doubleTrainingOutput;
     vector<vector<double>> doubleTestingInput;
     vector<double> doubleTestingOutput;
+    vector<string> datasets;
+    string datasetName;
 
 public:
-    Experiment(vector<Updater *> _a, string _dataset, int rows, int columns);
+    Experiment(vector<Updater *> _a, vector<string> _datasets, int rows, int columns);
     bool runExperiment();
     void getDoubleData();
 private:

@@ -9,6 +9,8 @@
       <sourceFolder url="file://$MODULE_DIR$/ES.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Experiment.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Experiment.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/GA.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/GA.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/MultilayerNN.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/MultilayerNN.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Updater.cpp" isTestSource="false" />

@@ -13,14 +13,12 @@
 #include <random>
 #include <string.h>
 
-Experiment::Experiment(vector<Updater *> _a, string _dataset, int _rows, int _columns) {
+Experiment::Experiment(vector<Updater *> _a, vector<string> _datasets, int _rows, int _columns) {
     // Set parameters
     updaters = _a;
     columns = _columns;
     rows = _rows;
-
-    // Load dataset
-    getData(_dataset);
+    datasets = _datasets;
 }
 
 void Experiment::nextIteration() {
@@ -58,7 +56,12 @@ void Experiment::nextFold() {
 void Experiment::getData(string dataPath) {
     ifstream dataStream;
     string s_cell;
-    char * cell;
+    char *cell;
+
+    // Clear old dataset
+    dataset.clear();
+
+    datasetName = dataPath;
 
     // Open data file for reading
     dataStream.open(dataPath);
@@ -66,19 +69,19 @@ void Experiment::getData(string dataPath) {
         cerr << "Read stream failure: " << strerror(errno) << '\n';
     }
     // Loop through each tuple
-    for (int t = 0; t < rows; t = t + 1) {
+    while (getline(dataStream, s_cell)) {       // Read next "block" from data file
         vector<double> newTuple;                // Create empty vector
         dataset.push_back(newTuple);            // Add new tuple to dataset
-        getline(dataStream, s_cell);              // Read next "block" from data file
+
         cell = &s_cell[0u];
 
         cell = strtok(cell, ",");               // Tokenize cell by ','
 
         // Loop through each input, plus output
-        for (int n = 0; n < columns; n = n + 1) {
+        while (cell != NULL) {
             double num = stringToNumber(cell);  // Convert cell string to double
-            dataset.at(t).push_back(num);       // Add this cell to dataset
-            cell  = strtok(NULL, ",");          // Next token
+            dataset.back().push_back(num);       // Add this cell to dataset
+            cell = strtok(NULL, ",");          // Next token
         }
     }
 
@@ -108,21 +111,29 @@ bool Experiment::runExperiment() {
         cerr << "open stream failure at rs: " << strerror(errno) << '\n';
     }
 
-    //nextIteration();
-    //a.front() -> train(trainingData);
+    // Ruin 5x2CV on each dataset
 
-    // 5X
-    for (int i = 0; i < 5; i++) {
-        nextIteration();
-        // 2 CV
-        for (int j = 0; j < 2; j++) {
-            nextFold();
+    for (auto &ds : datasets) {
 
-            // Train all algorithms, run their returned NN
-            for (int alg = 0; alg < updaters.size(); alg++) {
-                MultilayerNN resultingNN = updaters[alg]->train(&trainingData);
-                resultStream << i << "," << j << "," << updaters[alg]->nickname() <<
-                "," << resultingNN.run(testingData) << endl;
+        // Load dataset
+        getData(ds);
+
+        //nextIteration();
+        //a.front() -> train(trainingData);
+
+        // 5X
+        for (int i = 0; i < 5; i++) {
+            nextIteration();
+            // 2 CV
+            for (int j = 0; j < 2; j++) {
+                nextFold();
+
+                // Train all algorithms, run their returned NN
+                for (int alg = 0; alg < updaters.size(); alg++) {
+                    MultilayerNN resultingNN = updaters[alg]->train(&trainingData);
+                    resultStream << datasetName << "," << i << "," << j << "," << updaters[alg]->nickname() <<
+                    "," << resultingNN.run(testingData) << endl;
+                }
             }
         }
     }
