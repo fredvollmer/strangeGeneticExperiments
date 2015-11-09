@@ -8,7 +8,11 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+
+#include <bits/stl_algo.h>
+
 #include <algorithm>
+
 
 ES::ES(int _children_parent_ratio, int _maxGenerations, double _targetError, int _inputNodes, int _hiddenNodes,
        int _hiddenLayers, int _outputNodes,
@@ -99,11 +103,19 @@ MultilayerNN ES::train(vector<vector<double>> *_dataset) {
         // Pull out the first 50 to replace population
         for (int i = 0; i < 50; i++) {
             // Iterator pointing to next min
+//<<<<<<< HEAD
+//            //it = min_element(selectionChroms.begin(), selectionChroms.end());
+//
+//            // Save this element, then erase it from vector
+//            currentMin = selectionChroms.at(it);
+//            //selectionChroms.erase(it);
+//=======
             auto it = min_element(selectionChroms.begin(), selectionChroms.end());
 
             // Save this element, then erase it from vector
             currentMin = *it;
             selectionChroms.erase(it);
+//>>>>>>> 0a88efe32cc5835371bb086ddf1c8d9ac4be49cb
 
             // If this is absolute minimum, save it as current best
             if (i == 0) {

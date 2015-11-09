@@ -7,5 +7,5 @@ set(SOURCE_FILES main.cpp
 Experiment.cpp
 Experiment.h
 MultilayerNN.cpp
-MultilayerNN.h Updater.cpp Updater.h ES.cpp ES.h GA.cpp GA.h)
+MultilayerNN.h Updater.cpp Updater.h ES.cpp ES.h GA.cpp GA.h DE.cpp DE.h)
 add_executable(Assignment3 ${SOURCE_FILES})
