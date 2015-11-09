@@ -1,5 +1,5 @@
 //
-// Created by Fred Vollmer on 11/1/15.
+// Created by Connor O'Leary on 11/9/15.
 //
 
 #include "GA.h"
