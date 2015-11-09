@@ -63,27 +63,20 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
         // Clear offspring
         offspring.clear();
         selectionChroms.clear();
-        //cout<<population.size()<<endl;
         // Generate offspring, add into temporary offspring pool
         for (int i = 0; i < population.size()/2; i++) {
-            //cout<<"for loop 1"<<endl;
             // select the best two parents out of ten random chromosomes
             random_shuffle(population.begin(), population.end());
-            //cout<<"for loop 2"<<endl;
             Chromosome parents[2];
-            //cout<<"for loop 3"<<endl;
             selection(parents);
-            //cout<<"for loop 4"<<endl;
+
             // Create child via recombination
             Chromosome children[2]={population[0],population[1]};
-            //cout<<"for loop 5"<<endl;
             crossover(parents,children);
-            //cout<<"for loop 6"<<endl;
             offspring.push_back(children[0]);
             offspring.push_back(children[1]);
-            //cout<<"for loop 7"<<endl;
         }
-        //cout<<"after for loop"<<endl;
+
         if (population.size()%2==1){
             // if the population is odd, add one more child
             random_shuffle(population.begin(), population.end());
@@ -124,6 +117,7 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
 
         if(previousMinimumError>currentMinimumError){
             lowDeltaCounter=0;
+            cout << "Generation " << generation << ": " << currentMinimumError << endl;
         }
         else{
             lowDeltaCounter++;
@@ -134,8 +128,7 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
             resultStream << generation << "," << currentMinimumError << endl;
         }
 
-        cout << "Generation " << generation << ": " << currentMinimumError << endl;
-        cout << lowDeltaCounter << endl;
+        //cout << "Generation " << generation << ": " << currentMinimumError << endl;
 
         // Next generation
         generation++;
@@ -167,7 +160,6 @@ void GA::selection(Chromosome parents[2]) {
 }
 
 GA::Chromosome* GA::crossover(Chromosome* p, Chromosome* two_children) {
-    //cout<<"crossover"<<endl;
     //two_children = {p[0],p[1]};
 
     double temp;
@@ -176,19 +168,13 @@ GA::Chromosome* GA::crossover(Chromosome* p, Chromosome* two_children) {
     for (int i = 0; i < two_children[0].nn.weights.size(); i++) {
         for (int j = 0; j < two_children[0].nn.weights[i].size(); j++) {
             //crossover the individual value a 5th of the time
-            //cout<<"crossover check"<<endl;
             if(rand()>__RAND_MAX/10){
-                //cout<<"crossover numbers"<<endl;
                 temp=two_children[0].nn.weights[i][j];
-                //cout<<"crossover numbers2"<<endl;
                 two_children[0].nn.weights[i][j]=two_children[1].nn.weights[i][j];
-                //cout<<"crossover numbers3"<<endl;
                 two_children[1].nn.weights[i][j]=temp;
             }
-            //cout<<"crossover check 2"<<endl;
         }
     }
-    //cout<<"crossover end"<<endl;
 
     // Child step size is average of parents'
     /*child.stepSize = (p1.stepSize + p2.stepSize) / 2;*/
@@ -197,18 +183,13 @@ GA::Chromosome* GA::crossover(Chromosome* p, Chromosome* two_children) {
 }
 
 void GA::mutate(Chromosome &c) {
-    //cout<<"mutate";
     normal_distribution<double> norm(0, 1);
     random_device rd;
-    // Mutate step size
-    /*double delta = exp((overallLearningRate * globalTerm) + (cwLearningRate * norm(rd)));
-    c.stepSize = c.stepSize * delta;*/
 
     // Mutate object function: mutate each weight
     for (int i = 0; i < c.nn.weights.size(); i++) {
         for (int j = 0; j < c.nn.weights[i].size(); j++) {
             if (rand()<__RAND_MAX/2) {
-                //cout<<norm(rd)<<endl;
                 c.nn.weights[i][j] += c.nn.weights[i][j] * norm(rd);
             }
         }
