@@ -32,10 +32,11 @@ GA::GA(int _maxGenerations, double _targetError, int _inputNodes, int _hiddenNod
 
 MultilayerNN GA::train(vector<vector<double>> *_dataset) {
     int lowDeltaCounter = 0;
-    random_device rd;                                               // Initialize random device & distribution
+    /*random_device rd;                                               // Initialize random device & distribution
     uniform_int_distribution<u_long> dist(0, 50 - 1);
-    normal_distribution<double> norm(0, 1);
+    normal_distribution<double> norm(0, 1);*/
     double currentMinimumError = DBL_MAX;
+    double previousMinimumError;
     vector<Chromosome> selectionChroms(50 * children_parent_ratio + 50);
     Chromosome currentMin;
 
@@ -62,27 +63,35 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
         // Clear offspring
         offspring.clear();
         selectionChroms.clear();
-
+        //cout<<population.size()<<endl;
         // Generate offspring, add into temporary offspring pool
         for (int i = 0; i < population.size()/2; i++) {
+            //cout<<"for loop 1"<<endl;
             // select the best two parents out of ten random chromosomes
             random_shuffle(population.begin(), population.end());
+            //cout<<"for loop 2"<<endl;
             Chromosome parents[2];
+            //cout<<"for loop 3"<<endl;
             selection(parents);
+            //cout<<"for loop 4"<<endl;
             // Create child via recombination
-            Chromosome *children;
-            children = crossover(parents);
+            Chromosome children[2]={population[0],population[1]};
+            //cout<<"for loop 5"<<endl;
+            crossover(parents,children);
+            //cout<<"for loop 6"<<endl;
             offspring.push_back(children[0]);
             offspring.push_back(children[1]);
+            //cout<<"for loop 7"<<endl;
         }
+        //cout<<"after for loop"<<endl;
         if (population.size()%2==1){
-            // select the best two parents out of ten random chromosomes
+            // if the population is odd, add one more child
             random_shuffle(population.begin(), population.end());
             Chromosome parents[2];
             selection(parents);
             // Create child via recombination
             Chromosome *children;
-            children = crossover(parents);
+            crossover(parents, children);
             offspring.push_back(children[0]);
         }
 
@@ -104,11 +113,20 @@ MultilayerNN GA::train(vector<vector<double>> *_dataset) {
 
         population=offspring;
 
+        previousMinimumError=currentMinimumError;
+
         //find minimum error
         for (int i = 0; i < population.size(); i++) {
                 if(population[i].nn.lastMSE<currentMinimumError) {
                     currentMinimumError=population[i].nn.lastMSE;
                 }
+        }
+
+        if(previousMinimumError>currentMinimumError){
+            lowDeltaCounter=0;
+        }
+        else{
+            lowDeltaCounter++;
         }
 
         // Output result every 50 gens
@@ -140,7 +158,7 @@ void GA::selection(Chromosome parents[2]) {
     parents[1]=population[1];
 
     // Create child network by taking average of each weight from parents 7t80
-    for (int i = 1; i < 10; i++) {
+    for (int i = 1; i < 25; i++) {
         if(parents[0].nn.lastMSE>population[i].nn.lastMSE){
             parents[1]=parents[0];
             parents[0]=population[i];
@@ -148,21 +166,29 @@ void GA::selection(Chromosome parents[2]) {
     }
 }
 
-GA::Chromosome* GA::crossover(Chromosome* p) {
-    Chromosome two_children[2] = {p[0],p[1]};
+GA::Chromosome* GA::crossover(Chromosome* p, Chromosome* two_children) {
+    //cout<<"crossover"<<endl;
+    //two_children = {p[0],p[1]};
+
     double temp;
 
     // Create child network by taking average of each weight from parents 7t80
     for (int i = 0; i < two_children[0].nn.weights.size(); i++) {
         for (int j = 0; j < two_children[0].nn.weights[i].size(); j++) {
             //crossover the individual value a 5th of the time
-            if(rand()>__RAND_MAX/5){
+            //cout<<"crossover check"<<endl;
+            if(rand()>__RAND_MAX/10){
+                //cout<<"crossover numbers"<<endl;
                 temp=two_children[0].nn.weights[i][j];
+                //cout<<"crossover numbers2"<<endl;
                 two_children[0].nn.weights[i][j]=two_children[1].nn.weights[i][j];
+                //cout<<"crossover numbers3"<<endl;
                 two_children[1].nn.weights[i][j]=temp;
             }
+            //cout<<"crossover check 2"<<endl;
         }
     }
+    //cout<<"crossover end"<<endl;
 
     // Child step size is average of parents'
     /*child.stepSize = (p1.stepSize + p2.stepSize) / 2;*/
@@ -171,7 +197,8 @@ GA::Chromosome* GA::crossover(Chromosome* p) {
 }
 
 void GA::mutate(Chromosome &c) {
-    normal_distribution<double> norm(0, .2);
+    //cout<<"mutate";
+    normal_distribution<double> norm(0, 1);
     random_device rd;
     // Mutate step size
     /*double delta = exp((overallLearningRate * globalTerm) + (cwLearningRate * norm(rd)));
@@ -180,7 +207,8 @@ void GA::mutate(Chromosome &c) {
     // Mutate object function: mutate each weight
     for (int i = 0; i < c.nn.weights.size(); i++) {
         for (int j = 0; j < c.nn.weights[i].size(); j++) {
-            if (rand()>__RAND_MAX/2) {
+            if (rand()<__RAND_MAX/2) {
+                //cout<<norm(rd)<<endl;
                 c.nn.weights[i][j] += c.nn.weights[i][j] * norm(rd);
             }
         }
@@ -195,11 +223,10 @@ void GA::populationSetup() {
     // init networks
     initPopulation();
 
-    // Init population, initial step size is 1
-    /*for (auto &nn : networks) {
+    // Init population
+    for (auto &nn : networks) {
         Chromosome *p = new Chromosome();
         p->nn = nn;
-        p->stepSize = 1;
         population.push_back(*p);
-    }*/
+    }
 }

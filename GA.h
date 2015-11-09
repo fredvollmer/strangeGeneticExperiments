@@ -43,7 +43,7 @@ private:
     vector<double> populationErrors;
     void runNetworks();
     void selection(Chromosome parents[2]);
-    Chromosome* crossover(Chromosome* p);
+    Chromosome* crossover(Chromosome* p, Chromosome* two_children);
     void mutate(Chromosome &c);
     void populationSetup();
 };
